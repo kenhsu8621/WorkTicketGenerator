@@ -102,7 +102,7 @@ export default {
     border-radius: 20px;
     display: flex;
     color: #4b4b4b;
-    box-shadow: rgba(239, 140, 19, 0.25) 0px 6px 12px -2px, rgba(132, 64, 16, 0.3) 0px 3px 7px -3px;
+    box-shadow: rgba(239, 140, 19, 0.25) 2.4px 2.4px 3.2px;
 
     .ticket-info {
       flex: 3;
