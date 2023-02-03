@@ -3,14 +3,14 @@
     <div class="title">Work Ticket Generator</div>
     <div class="ticket-container">
       <div class="ticket-info">
-        <div class="style">{{ style }}</div>
+        <div class="style">{{ style }} - {{ ticket_no }}</div>
         <div class="row">
-          <div class="item-left">Step <span class="number">{{ step }}</span></div>
+          <div class="item-left">Step<span class="number">{{ step }}</span></div>
           <div class="item-right">Bundle<span class="number">{{ bundle }}</span></div>
         </div>
         <div class="row">
-          <div class="item-left">Amt.<span class="number">{{ amt }}</span></div>
-          <div class="item-right">QTY<span class="number qty">{{ qty }}</span></div>
+          <div class="item-left">Amt.<span class="number">{{ amount }}</span></div>
+          <div class="item-right">Qty.<span class="number qty">{{ qty }}</span></div>
         </div>
       </div>
       <div class="gap top"></div>
@@ -37,9 +37,10 @@ export default {
     return {
       dataUrl: null,
       style: "Style",
+      ticket_no: null,
       step: "???",
       bundle: "???",
-      amt: "???",
+      amount: "???",
       qty: "???",
       qrcodeData: "This is a default QRCode, please generate a new one!"
     }
@@ -51,29 +52,25 @@ export default {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min) + min);
       }
-      let step;
       let styleList = ["Fashion", "Antique", "Formal", "Casual"]
-      let currencyList = ["$", "€", "£", "¥"];
-      step = getRandomInt(1, 4)
-      if (step === 1) {
-        this.step = "1-2-5";
-      } else if (step === 2) {
-        this.step = "Waiting For Input"
-      } else {
-        this.step = "N/A"
-      }
+      // let currencyList = ["$", "€", "£", "¥"];
+      this.step = `${getRandomInt(1, 4)}-${getRandomInt(1, 4)}-${getRandomInt(1, 4)}`;
       this.style = styleList[getRandomInt(0, 4)]
       this.bundle = getRandomInt(1000, 10000);
       this.qty = getRandomInt(1, 30) * 100;
-      this.amt = `${currencyList[getRandomInt(0, 4)]} ${this.qty * getRandomInt(1, 30)}`;
+      // this.amount = `${currencyList[getRandomInt(0, 4)]} ${this.qty * getRandomInt(1, 30)}`;
+      this.amount = this.qty * getRandomInt(1, 30);
+      this.ticket_no = (Math.random() * 1000000000000).toFixed();
 
       this.qrcodeData = JSON.stringify({
         "style": this.style,
+        "ticket_no": this.ticket_no,
         "step": this.step,
         "bundle": this.bundle,
-        "amt": this.amt,
+        "amount": this.amount,
         "qty": this.qty,
       })
+      console.log(this.qrcodeData);
     }
   },
 }
