@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
-    <div class="title">Work Ticket Generator</div>
-    <div class="ticket-container">
+  <div class="home" :class="{ 'home-alt': !isQRCode }">
+    <div class="title" :class="{ 'title-alt': !isQRCode }">{{ isQRCode ? "QRCode" : "Barcode" }} Generator</div>
+    <div class="ticket-container" v-if="isQRCode">
       <div class="ticket-info">
         <div class="style">{{ style }} - {{ ticket_no }}</div>
         <div class="row">
@@ -16,25 +16,36 @@
       <div class="gap top"></div>
       <div class="gap bottom"></div>
       <div class="ticket-qrcode">
-        <vue-qrcode :value="qrcodeData" :color="{ dark: '#000000ff', light: '#ffffffff' }"
-          type="image/png"></vue-qrcode>
+        <vue-qrcode :value="qrcodeData" :color="{ dark: '#000000ff', light: '#ffffffff' }" type="image/png"></vue-qrcode>
       </div>
     </div>
+    <div class="barcode-container" v-if="!isQRCode">
+      <vue3-barcode :value="barcodeData" :width="3" :height="80" :fontSize="30" class="barcode-style" />
+    </div>
     <div class="generate">
-      <button class="generate-btn" @click="generateQRCode">Generate !</button>
+      <button class="generate-btn" :class="{ 'btn-alt': !isQRCode }" v-if="isQRCode" @click="generateQRCode">Generate
+        !</button>
+      <button class="generate-btn" :class="{ 'btn-alt': !isQRCode }" v-if="!isQRCode" @click="generateBarcode">Generate
+        !</button><br />
+      <button class="generate-btn switch-btn" :class="{ 'btn-alt': !isQRCode }" @click="isQRCode = !isQRCode">Switch to {{
+        isQRCode ? "Barcode" : "QRCode"
+      }}</button>
     </div>
   </div>
 </template>
 
 <script>
-import VueQrcode from "vue-qrcode"
+import VueQrcode from "vue-qrcode";
+import Vue3Barcode from "vue3-barcode";
 
 export default {
   components: {
     VueQrcode,
+    Vue3Barcode
   },
   data() {
     return {
+      isQRCode: true,
       dataUrl: null,
       style: "Style",
       ticket_no: null,
@@ -42,24 +53,20 @@ export default {
       bundle: "???",
       amount: "???",
       qty: "???",
-      qrcodeData: "This is a default QRCode, please generate a new one!"
+      qrcodeData: "This is a default QRCode, please generate a new one!",
+      barcodeData: "106,1,A,A"
     }
   },
   methods: {
     generateQRCode() {
-      function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min);
-      }
       let styleList = ["Fashion", "Antique", "Formal", "Casual"]
       // let currencyList = ["$", "€", "£", "¥"];
-      this.step = `${getRandomInt(1, 4)}-${getRandomInt(1, 4)}-${getRandomInt(1, 4)}`;
-      this.style = styleList[getRandomInt(0, 4)]
-      this.bundle = getRandomInt(1000, 10000);
-      this.qty = getRandomInt(1, 30) * 100;
-      // this.amount = `${currencyList[getRandomInt(0, 4)]} ${this.qty * getRandomInt(1, 30)}`;
-      this.amount = this.qty * getRandomInt(1, 30);
+      this.step = `${this.getRandomInt(1, 4)}-${this.getRandomInt(1, 4)}-${this.getRandomInt(1, 4)}`;
+      this.style = styleList[this.getRandomInt(0, 4)]
+      this.bundle = this.getRandomInt(1000, 10000);
+      this.qty = this.getRandomInt(1, 30) * 100;
+      // this.amount = `${currencyList[this.getRandomInt(0, 4)]} ${this.qty * this.getRandomInt(1, 30)}`;
+      this.amount = this.qty * this.getRandomInt(1, 30);
       this.ticket_no = (Math.random() * 1000000000000).toFixed();
 
       this.qrcodeData = JSON.stringify({
@@ -71,6 +78,15 @@ export default {
         "qty": this.qty,
       })
       console.log(this.qrcodeData);
+    },
+    generateBarcode() {
+      this.barcodeData = `${this.getRandomInt(106, 110)},${this.getRandomInt(1, 4)},${this.getRandomInt(1, 3) === 1 ? "A" : "B"},${this.getRandomInt(1, 3) === 1 ? "A" : "B"}`
+      let first
+    },
+    getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
     }
   },
 }
@@ -81,6 +97,7 @@ export default {
   margin: 0;
   height: 100vh;
   background-color: #ffe3c8;
+  transition: .5s all ease-in-out;
 
   .title {
     padding-top: 10vh;
@@ -88,6 +105,11 @@ export default {
     color: #fa7d00;
     font-size: 2.5vw;
     font-family: jfOpenhuninn;
+    transition: .5s all ease-in-out;
+  }
+
+  .title-alt {
+    color: #45ace8;
   }
 
   .ticket-container {
@@ -173,6 +195,23 @@ export default {
     }
   }
 
+  .barcode-container {
+    position: relative;
+    width: 40vw;
+    aspect-ratio: 3/1;
+    margin: auto;
+    margin-top: 5vh;
+    border-radius: 20px;
+    display: flex;
+    background-color: #fff;
+    color: #4b4b4b;
+    box-shadow: rgba(19, 169, 239, 0.25) 2.4px 2.4px 3.2px;
+
+    .barcode-style {
+      margin: auto;
+    }
+  }
+
   .generate {
     text-align: center;
     margin-top: 10vh;
@@ -195,6 +234,28 @@ export default {
         background-color: #e97500;
       }
     }
+
+    .btn-alt {
+      border-color: #5bb5e8;
+      background-color: #74c6f5;
+      box-shadow: rgba(19, 169, 239, 0.25) 2.4px 2.4px 3.2px;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        border: 5px solid #339cd8;
+        background-color: #69c0f3;
+      }
+    }
+
+    .switch-btn {
+      width: 13vw;
+      margin-top: 20px;
+      font-size: 1.3vw;
+    }
   }
+}
+
+.home-alt {
+  background-color: #c5e7ff;
 }
 </style>
