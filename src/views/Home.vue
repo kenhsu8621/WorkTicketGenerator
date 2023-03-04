@@ -25,8 +25,11 @@
     <div class="generate">
       <button class="generate-btn" :class="{ 'btn-alt': !isQRCode }" v-if="isQRCode" @click="generateQRCode">Generate
         !</button>
-      <button class="generate-btn" :class="{ 'btn-alt': !isQRCode }" v-if="!isQRCode" @click="generateBarcode">Generate
-        !</button><br />
+      <button class="generate-btn half" :class="{ 'btn-alt': !isQRCode }" v-if="!isQRCode"
+        @click="generateBarcode('loc')">LOC</button>
+      <button class="generate-btn half right" :class="{ 'btn-alt': !isQRCode }" v-if="!isQRCode"
+        @click="generateBarcode('sn')">SN</button>
+      <br />
       <button class="generate-btn switch-btn" :class="{ 'btn-alt': !isQRCode }" @click="isQRCode = !isQRCode">Switch to {{
         isQRCode ? "Barcode" : "QRCode"
       }}</button>
@@ -79,9 +82,9 @@ export default {
       })
       console.log(this.qrcodeData);
     },
-    generateBarcode() {
-      this.barcodeData = `${this.getRandomInt(106, 110)},${this.getRandomInt(1, 4)},${this.getRandomInt(1, 3) === 1 ? "A" : "B"},${this.getRandomInt(1, 3) === 1 ? "A" : "B"}`
-      let first
+    generateBarcode(type) {
+      if (type === "loc") this.barcodeData = `${this.getRandomInt(106, 110)},${this.getRandomInt(1, 4)},${this.getRandomInt(1, 3) === 1 ? "A" : "B"},${this.getRandomInt(1, 3) === 1 ? "A" : "B"}`
+      else this.barcodeData = (Math.random() * 1000000000000).toFixed()
     },
     getRandomInt(min, max) {
       min = Math.ceil(min);
@@ -219,7 +222,7 @@ export default {
     .generate-btn {
       font-family: CreteRound-Regular;
       width: 15vw;
-      aspect-ratio: 3/1;
+      height: 7vh;
       font-size: 2vw;
       border-radius: 1.5vw;
       border: 5px solid #db6d00;
@@ -248,9 +251,17 @@ export default {
     }
 
     .switch-btn {
-      width: 13vw;
-      margin-top: 20px;
-      font-size: 1.3vw;
+      width: 15vw;
+      margin-top: 1vw;
+      font-size: 1.5vw;
+    }
+
+    .half {
+      width: 7vw;
+    }
+
+    .right {
+      margin-left: 1vw;
     }
   }
 }
